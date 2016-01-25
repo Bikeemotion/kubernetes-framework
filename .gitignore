@@ -1,0 +1,20 @@
+/target
+/bin
+
+# Netbeans
+nb-configuration.xml
+/nbproject/
+
+# Idea
+*.iml
+.idea
+
+# Eclipse
+.settings
+.classpath
+.project
+
+#Temp Files
+*~
+
+

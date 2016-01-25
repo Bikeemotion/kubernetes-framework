@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.bikeemotion</groupId>
+  <artifactId>kubernetes-framework</artifactId>
+  <name>Bikeemotion Kubernetes Framework</name>
+  <version>0.2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+
+  <properties>
+
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <jackson.version>2.5.4</jackson.version>
+    <slf4j.version>1.7.7</slf4j.version>
+
+    <!-- Plug-ins -->
+    <license.plugin.version>2.6</license.plugin.version>
+    <bundle-plugin.version>2.4.0</bundle-plugin.version>
+    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license.plugin.version}</version>
+        <inherited>false</inherited>
+        <configuration>
+          <aggregate>true</aggregate>
+          <header>${basedir}/COPYRIGHT</header>
+          <strictCheck>true</strictCheck>
+          <includes>
+            <include>**/src/main/java/**/*.java</include>
+            <include>**/src/test/java/**/*.java</include>
+            <include>**/src/main/**/*.xml</include>
+            <include>**/src/test/**/*.xml</include>
+            <include>**/src/main/**/*.karaf</include>
+            <include>**/src/test/**/*.karaf</include>
+            <modelVersion>4.0.0</modelVersion>
+          </includes>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <encoding>UTF-8</encoding>
+          <properties>
+            <inception>${project.inceptionYear}</inception>
+            <company>Bikeemotion</company>
+          </properties>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>${bundle-plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <_failok>true</_failok>
+            <!--<_removeheaders>Import-Service</_removeheaders>-->
+            <Bundle-Name>${project.name}</Bundle-Name>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Implementation-Version>${project.version}</Implementation-Version>
+            <Import-Package>*</Import-Package>
+            <Export-Package>com.bikeemotion.kubernetes*</Export-Package>
+            <Private-Package></Private-Package>
+            <DynamicImport-Package>${osgi.dynamic.pkg}</DynamicImport-Package>
+            <Export-Service>${osgi.services.export}</Export-Service>
+            <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+            <Embed-Transitive>${osgi.embed.transitive}</Embed-Transitive>
+            <Require-Bundle>${osgi.require.bundle}</Require-Bundle>
+            <Require-Capability>${osgi.capabilities.require}</Require-Capability>
+            <Provide-Capability>${osgi.capabilities.provide}</Provide-Capability>
+            <Service-Component>${osgi.service.component}</Service-Component>
+            <Meta-Persistence>${osgi.meta.persistence}</Meta-Persistence>
+            <Fragment-Host>${osgi.fragment.host}</Fragment-Host>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <optimize>true</optimize>
+          <debug>true</debug>
+          <compilerArgument>-proc:none</compilerArgument>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>bikeemotion_mvn_central</id>
+      <name>Internal Releases</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
+    <snapshotRepository>
+      <id>bikeemotion_mvn_central</id>
+      <name>Internal Releases</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+
+</project>
