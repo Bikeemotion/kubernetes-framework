@@ -1,4 +1,4 @@
-Kubernetes Framework [![](https://raw.githubusercontent.com/novoda/novoda/master/assets/btn_apache_lisence.png)](LICENSE.txt)
+Kubernetes Framework [![Build Status](https://travis-ci.org/Bikeemotion/kubernetes-framework.svg?branch=master)](https://travis-ci.org/Bikeemotion/kubernetes-framework) [![](https://raw.githubusercontent.com/novoda/novoda/master/assets/btn_apache_lisence.png)](LICENSE.txt)
 ====================================
 An implementation of a java client for Kubernetes API
 
