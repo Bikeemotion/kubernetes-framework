@@ -7,9 +7,20 @@
   <groupId>com.bikeemotion</groupId>
   <artifactId>kubernetes-framework</artifactId>
   <name>Bikeemotion Kubernetes Framework</name>
-  <version>0.2-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
+  <issueManagement>
+    <url>https://github.com/Bikeemotion/kubernetes-framework/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+
+  <scm>
+    <url>https://github.com/Bikeemotion/kubernetes-framework/</url>
+    <connection>scm:git:git://github.com/Bikeemotion/kubernetes-framework.git</connection>
+    <developerConnection>scm:git:git://github.com/Bikeemotion/kubernetes-framework.git</developerConnection>
+  </scm>
 
   <properties>
 
@@ -136,6 +147,16 @@
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -143,13 +164,13 @@
     <repository>
       <id>bikeemotion_mvn_central</id>
       <name>Internal Releases</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-    <snapshotRepository>
+    <!--    <snapshotRepository>
       <id>bikeemotion_mvn_central</id>
       <name>Internal Releases</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
+    </snapshotRepository>-->
   </distributionManagement>
 
 

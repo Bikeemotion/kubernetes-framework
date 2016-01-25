@@ -7,7 +7,7 @@ An implementation of a java client for Kubernetes API
  <dependency>
     <groupId>com.bikeemotion</groupId>
     <artifactId>kubernetes-framework</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -23,4 +23,13 @@ mvn clean install
 ```
 
 ### How to Use Kubernetes Framework
+```
+  // querying Kubernetes service
+  Portal servicePortalIP = queryService(serviceId, defaultAddress, 5701);
 
+  // querying Kubernetes pods
+  List<Portal> queryPods(endpointName, defaultHost, defaultPort);
+
+  // querying number replicas of a pod
+  int queryReplicationControllerReplicas(final String replicationControllerName)
+```
