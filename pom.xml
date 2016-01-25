@@ -5,7 +5,7 @@
   <groupId>com.bikeemotion</groupId>
   <artifactId>kubernetes-framework</artifactId>
   <name>Bikeemotion Kubernetes Framework</name>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <issueManagement>
@@ -18,7 +18,7 @@
     <url>https://github.com/Bikeemotion/kubernetes-framework/</url>
     <connection>scm:git:git://github.com/Bikeemotion/kubernetes-framework.git</connection>
     <developerConnection>scm:git:git://github.com/Bikeemotion/kubernetes-framework.git</developerConnection>
-    <tag>1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
