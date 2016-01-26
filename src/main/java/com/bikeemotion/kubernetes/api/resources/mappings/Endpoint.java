@@ -1,6 +1,6 @@
 /**
  * Copyright (C) Bikeemotion
- * ${inception}
+ * 2014
  *
  * The reproduction, transmission or use of this document or its contents is not
  * permitted without express written authorization. All rights, including rights
