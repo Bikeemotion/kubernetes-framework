@@ -7,7 +7,7 @@ An implementation of a java client for Kubernetes API
  <dependency>
     <groupId>com.bikeemotion</groupId>
     <artifactId>kubernetes-framework</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
