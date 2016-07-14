@@ -198,7 +198,7 @@ public class KubernetesDao {
             .map((k) -> k + "=" + queryParams.get(k))
             .collect(Collectors.joining("&")));
 
-    log.info("URL -> {}", path);
+    //log.info("URL -> {}", path);
 
     try {
 
@@ -222,12 +222,12 @@ public class KubernetesDao {
       }
     } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
 
-//      if (log.isDebugEnabled()) {
+      if (log.isDebugEnabled()) {
 
         log.error("Request to Kubernetes API failed with the following exception", ex);
-//      } else {
-//        log.warn("Request to Kubernetes API failed");
-//      }
+      } else {
+        log.warn("Request to Kubernetes API failed");
+      }
     }
 
     return result;
