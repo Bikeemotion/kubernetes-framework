@@ -9,28 +9,16 @@
  * personnel only. Technical specifications and features are binding only when
  * specifically and expressly agreed upon in a written contract.
  */
-package com.bikeemotion.kubernetes.api.resources;
+package com.bikeemotion.kubernetes.api.resources.mappings;
 
-public enum ResourceType {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-  ENDPOINT("endpoints"),
+import java.util.List;
 
-  SERVICE("services"),
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PodList {
 
-  REPLICATIONCONTROLLER("replicationcontrollers"),
+  public String kind;
 
-  POD("pods");
-
-  private final String value;
-
-  private ResourceType(final String value) {
-
-    this.value = value;
-  }
-
-  @Override
-  public String toString() {
-
-    return value;
-  }
+  public List<Pod> items;
 }

@@ -13,9 +13,19 @@ package com.bikeemotion.kubernetes;
 
 import com.bikeemotion.kubernetes.api.resources.ResourceType;
 import com.bikeemotion.kubernetes.api.resources.mappings.Endpoint;
+import com.bikeemotion.kubernetes.api.resources.mappings.PodList;
 import com.bikeemotion.kubernetes.api.resources.mappings.ReplicationController;
 import com.bikeemotion.kubernetes.api.resources.mappings.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -24,16 +34,13 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class KubernetesDao {
 
@@ -81,7 +88,7 @@ public class KubernetesDao {
       int defaultPort) {
 
     // if the service isn't there or this is simply not running on k8s it wont have results
-    if (queryK8sResource(ResourceType.SERVICE, Service.class, serviceName) != null) {
+    if (queryK8sResource(ResourceType.SERVICE, Service.class, serviceName, Collections.EMPTY_MAP) != null) {
 
       return new Portal(
           String.format(
@@ -102,7 +109,7 @@ public class KubernetesDao {
       final int defaultPort) {
 
     // endpoints have the POD's IPs
-    final Endpoint value = queryK8sResource(ResourceType.ENDPOINT, Endpoint.class, endpointName);
+    final Endpoint value = queryK8sResource(ResourceType.ENDPOINT, Endpoint.class, endpointName, Collections.EMPTY_MAP);
     if (value != null && value.subsets != null) {
 
       final List<Portal> result = new ArrayList<>();
@@ -117,12 +124,42 @@ public class KubernetesDao {
     }
   }
 
+  public static AbstractMap.SimpleEntry<Integer, Integer> queryReadyPods(final String labelQuery) {
+
+    // according to
+    //    http://kubernetes.io/docs/api-reference/v1/operations/
+    //    http://kubernetes.io/docs/user-guide/labels/
+
+    final Map<String, String> queryParams = new HashMap<>();
+    queryParams.put("labelSelector", labelQuery.replaceAll("=", "%3D"));
+
+    final PodList podList = queryK8sResource(
+        ResourceType.POD,
+        PodList.class,
+        "",
+        queryParams);
+
+    if (podList != null && podList.items.size() > 0) {
+      int readyPods = (int) podList.items.stream()
+          .flatMap(item -> item.status.containerStatuses.stream())
+          .filter(containers -> containers.ready)
+          .count();
+
+      return new AbstractMap.SimpleEntry<>(readyPods, podList.items.size());
+    } else {
+
+      log.warn("The label query [{}] didn't return any results", labelQuery);
+      return new AbstractMap.SimpleEntry<>(0, 0);
+    }
+  }
+
   public static int queryReplicationControllerReplicas(final String replicationControllerName) {
 
     final ReplicationController rc = queryK8sResource(
-        ResourceType.REPLICATIONCONTROLLERS,
+        ResourceType.REPLICATIONCONTROLLER,
         ReplicationController.class,
-        replicationControllerName);
+        replicationControllerName,
+        Collections.EMPTY_MAP);
 
     if (rc != null) {
 
@@ -140,18 +177,28 @@ public class KubernetesDao {
     return new String(Files.readAllBytes(Paths.get(SERVICE_ACCOUNT_TOKEN)));
   }
 
-  private static <T> T queryK8sResource(final ResourceType resourceType, final Class<T> clazz, final String artifactName) {
+  private static <T> T queryK8sResource(
+      final ResourceType resourceType,
+      final Class<T> clazz,
+      final String artifactName,
+      final Map<String, String> queryParams) {
 
     T result = null;
 
     final String namespace = getEnvOrDefault("POD_NAMESPACE", "default");
     final String host = getEnvOrDefault("KUBERNETES_PORT_443_TCP_ADDR", "10.100.0.1");
     final String path = String.format(
-        "https://%s/api/v1/namespaces/%s/%s/%s",
+        "https://%s/api/v1/namespaces/%s/%s/%s?%s",
         host,
         namespace,
         resourceType,
-        artifactName);
+        artifactName,
+        queryParams.keySet()
+            .stream()
+            .map((k) -> k + "=" + queryParams.get(k))
+            .collect(Collectors.joining("&")));
+
+    log.info("URL -> {}", path);
 
     try {
 
@@ -175,13 +222,12 @@ public class KubernetesDao {
       }
     } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
 
-      if (log.isDebugEnabled()) {
+//      if (log.isDebugEnabled()) {
 
         log.error("Request to Kubernetes API failed with the following exception", ex);
-      } else {
-
-        log.warn("Request to Kubernetes API failed");
-      }
+//      } else {
+//        log.warn("Request to Kubernetes API failed");
+//      }
     }
 
     return result;
