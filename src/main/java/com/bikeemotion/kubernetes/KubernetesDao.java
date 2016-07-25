@@ -113,9 +113,10 @@ public class KubernetesDao {
     if (value != null && value.subsets != null) {
 
       final List<Portal> result = new ArrayList<>();
-      value.subsets.stream().forEach(subset ->
-          subset.addresses.stream().forEach(a ->
-              result.add(new Portal(a.ip + ":" + defaultPort, defaultHost, defaultPort))));
+      value.subsets.stream()
+          .filter(subset -> subset.addresses != null)
+          .forEach(subset -> subset.addresses.stream()
+              .forEach(a -> result.add(new Portal(a.ip + ":" + defaultPort, defaultHost, defaultPort))));
 
       return result;
     } else {
