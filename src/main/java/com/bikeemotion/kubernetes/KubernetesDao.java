@@ -34,12 +34,12 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KubernetesDao {
@@ -109,13 +109,20 @@ public class KubernetesDao {
       final int defaultPort) {
 
     // endpoints have the POD's IPs
-    final Endpoint value = queryK8sResource(ResourceType.ENDPOINT, Endpoint.class, endpointName, Collections.EMPTY_MAP);
+    final Endpoint value = queryK8sResource(
+        ResourceType.ENDPOINT,
+        Endpoint.class,
+        endpointName,
+        Collections.EMPTY_MAP);
+
     if (value != null && value.subsets != null) {
 
       final List<Portal> result = new ArrayList<>();
-      value.subsets.stream()
+      value.subsets
+          .stream()
           .filter(subset -> subset.addresses != null)
-          .forEach(subset -> subset.addresses.stream()
+          .forEach(subset -> subset.addresses
+              .stream()
               .forEach(a -> result.add(new Portal(a.ip + ":" + defaultPort, defaultHost, defaultPort))));
 
       return result;
@@ -125,14 +132,15 @@ public class KubernetesDao {
     }
   }
 
-  public static AbstractMap.SimpleEntry<Integer, Integer> queryReadyPods(final String labelQuery) {
+  public static Set<Pod> queryPods(final String key, final String value) {
 
     // according to
     //    http://kubernetes.io/docs/api-reference/v1/operations/
     //    http://kubernetes.io/docs/user-guide/labels/
 
     final Map<String, String> queryParams = new HashMap<>();
-    queryParams.put("labelSelector", labelQuery.replaceAll("=", "%3D"));
+    String labelSelector = key + "%3D" + value;
+    queryParams.put("labelSelector", labelSelector);
 
     final PodList podList = queryK8sResource(
         ResourceType.POD,
@@ -140,17 +148,28 @@ public class KubernetesDao {
         "",
         queryParams);
 
-    if (podList != null && podList.items.size() > 0) {
-      int readyPods = (int) podList.items.stream()
-          .flatMap(item -> item.status.containerStatuses.stream())
-          .filter(containers -> containers.ready)
-          .count();
+    if (podList != null && !podList.items.isEmpty()) {
 
-      return new AbstractMap.SimpleEntry<>(readyPods, podList.items.size());
+      podList.items.stream()
+          .flatMap(item -> item.status.containerStatuses.stream())
+          .filter(containers -> containers.ready);
+
+      return podList.items
+          .stream()
+          .map(e ->
+              new Pod()
+                  .setIP(e.status.podIP)
+                  .setContainerID(e.status.containerStatuses
+                      .stream()
+                      .filter(cs -> cs.name.equals(value))
+                      .findFirst()
+                      .get()
+                      .containerID))
+          .collect(Collectors.toSet());
     } else {
 
-      log.warn("The label query [{}] didn't return any results", labelQuery);
-      return new AbstractMap.SimpleEntry<>(0, 0);
+      log.warn("The label query [{}] didn't return any results", labelSelector);
+      return Collections.EMPTY_SET;
     }
   }
 

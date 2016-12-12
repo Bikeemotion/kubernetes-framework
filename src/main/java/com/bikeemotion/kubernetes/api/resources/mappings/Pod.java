@@ -20,16 +20,19 @@ public class Pod {
 
   // nested types
   @JsonIgnoreProperties(ignoreUnknown = true)
-  public static class Status {
-
-    public List<ContainerStatus> containerStatuses;
-  }
-
-  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class ContainerStatus {
 
     public boolean ready;
+    public String name;
     public int restartCount;
+    public String containerID;
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class Status {
+
+    public List<ContainerStatus> containerStatuses;
+    public String podIP;
   }
 
   public Status status;
