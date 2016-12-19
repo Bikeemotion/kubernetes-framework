@@ -161,7 +161,7 @@ public class KubernetesDao {
                   .setIP(e.status.podIP)
                   .setContainerID(e.status.containerStatuses
                       .stream()
-                      .filter(cs -> cs.name.equals(value))
+                      .sorted((c, d) -> c.name.compareTo(d.name))
                       .findFirst()
                       .get()
                       .containerID))
