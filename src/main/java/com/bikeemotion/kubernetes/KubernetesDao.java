@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +149,7 @@ public class KubernetesDao {
         "",
         queryParams);
 
-    if (podList != null && !podList.items.isEmpty()) {
+    if (podList != null && podList.items != null && !podList.items.isEmpty()) {
 
       podList.items.stream()
           .flatMap(item -> item.status.containerStatuses.stream())
@@ -161,7 +162,7 @@ public class KubernetesDao {
                   .setIP(e.status.podIP)
                   .setContainerID(e.status.containerStatuses
                       .stream()
-                      .sorted((c, d) -> c.name.compareTo(d.name))
+                      .sorted(Comparator.comparing(c -> c.name))
                       .findFirst()
                       .get()
                       .containerID))
