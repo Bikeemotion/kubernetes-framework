@@ -19,7 +19,9 @@ public enum ResourceType {
 
   REPLICATIONCONTROLLER("replicationcontrollers"),
 
-  POD("pods");
+  POD("pods"),
+
+  CONFIGMAPS("configmaps");
 
   private final String value;
 

@@ -29,9 +29,13 @@
 
 
   <properties>
-    <osgi.import.pkg>*</osgi.import.pkg>
+    <osgi.import.pkg>
+      com.fasterxml.jackson.annotation*,
+      *
+    </osgi.import.pkg>
     <osgi.export.pkg>com.bikeemotion.kubernetes*</osgi.export.pkg>
     <osgi.private.pkg />
+    <kubernetes-model.version></kubernetes-model.version>
   </properties>
 
   <dependencies>
@@ -51,6 +55,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>kubernetes-model</artifactId>
+      <version>1.0.67</version>
     </dependency>
 
     <dependency>

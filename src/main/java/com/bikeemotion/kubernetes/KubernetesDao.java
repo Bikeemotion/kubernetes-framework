@@ -17,6 +17,7 @@ import com.bikeemotion.kubernetes.api.resources.mappings.PodList;
 import com.bikeemotion.kubernetes.api.resources.mappings.ReplicationController;
 import com.bikeemotion.kubernetes.api.resources.mappings.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,6 +190,18 @@ public class KubernetesDao {
 
       return 0;
     }
+  }
+
+  public static Map<String,String> queryConfigMapData(final String configMapName) {
+
+    final ConfigMap configMap = queryK8sResource(
+        ResourceType.CONFIGMAPS,
+        ConfigMap.class,
+        configMapName,
+        Collections.EMPTY_MAP);
+
+
+    return configMap != null ? configMap.getData() : null;
   }
 
   //internal API
