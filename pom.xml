@@ -11,7 +11,7 @@
   <groupId>com.bikeemotion</groupId>
   <artifactId>kubernetes-framework</artifactId>
   <name>Bikeemotion Kubernetes Framework</name>
-  <version>1.0.8-SNAPSHOT</version>
+  <version>1.0.8</version>
   <packaging>bundle</packaging>
 
   <issueManagement>
@@ -35,7 +35,7 @@
     </osgi.import.pkg>
     <osgi.export.pkg>com.bikeemotion.kubernetes*</osgi.export.pkg>
     <osgi.private.pkg />
-    <kubernetes-model.version></kubernetes-model.version>
+    <kubernetes-model.version />
   </properties>
 
   <dependencies>
