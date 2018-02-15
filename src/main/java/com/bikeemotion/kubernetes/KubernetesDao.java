@@ -161,12 +161,15 @@ public class KubernetesDao {
           .map(e ->
               new Pod()
                   .setIP(e.status.podIP)
-                  .setContainerID(e.status.containerStatuses
-                      .stream()
-                      .sorted(Comparator.comparing(c -> c.name))
-                      .findFirst()
-                      .get()
-                      .containerID))
+                  .setContainerID(
+                      e.status.containerStatuses != null && !e.status.containerStatuses.isEmpty() ?
+                          e.status.containerStatuses
+                              .stream()
+                              .sorted(Comparator.comparing(c -> c.name))
+                              .findFirst()
+                              .get()
+                          .containerID :
+                          null))
           .collect(Collectors.toSet());
     } else {
 
@@ -192,14 +195,13 @@ public class KubernetesDao {
     }
   }
 
-  public static Map<String,String> queryConfigMapData(final String configMapName) {
+  public static Map<String, String> queryConfigMapData(final String configMapName) {
 
     final ConfigMap configMap = queryK8sResource(
         ResourceType.CONFIGMAPS,
         ConfigMap.class,
         configMapName,
         Collections.EMPTY_MAP);
-
 
     return configMap != null ? configMap.getData() : null;
   }

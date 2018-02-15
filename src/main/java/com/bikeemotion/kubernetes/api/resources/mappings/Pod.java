@@ -26,6 +26,16 @@ public class Pod {
     public String name;
     public int restartCount;
     public String containerID;
+
+    @Override
+    public String toString() {
+      return "ContainerStatus{" +
+          "ready=" + ready +
+          ", name='" + name + '\'' +
+          ", restartCount=" + restartCount +
+          ", containerID='" + containerID + '\'' +
+          '}';
+    }
   }
 
   @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,7 +43,22 @@ public class Pod {
 
     public List<ContainerStatus> containerStatuses;
     public String podIP;
+
+    @Override
+    public String toString() {
+      return "Status{" +
+              "containerStatuses=" + containerStatuses +
+              ", podIP='" + podIP + '\'' +
+              '}';
+    }
   }
 
   public Status status;
+
+  @Override
+  public String toString() {
+    return "Pod{" +
+            "status=" + status +
+            '}';
+  }
 }
